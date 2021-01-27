@@ -1,4 +1,5 @@
 ##################### Setup Information #####################
+import time
 MENU = {
     "espresso": {
         "ingredients": {
@@ -35,16 +36,26 @@ resources = {
 
 ##################### Helper Functions #####################
 
-def sufficient_resources(drink): #come back and refactor for specific deficiencies
-
-    return (drink.get("water", 0) < resources["water"] and
-            drink.get("milk", 0) < resources["milk"] and
-            drink.get("coffee", 0) < resources["coffee"])
+def check_resources(drink):
+    """Checks that there are sufficient resources to make a drink"""
+    w, m, c = [True] * 3
+    if drink.get("water", 0) > resources["water"]:
+        print("Sorry, not enough water!")
+        w = False
+    if drink.get("milk", 0) > resources["milk"]:
+        print("Sorry, not enough milk!")
+        m = False
+    if drink.get("coffee", 0) > resources["coffee"]:
+        print("Sorry, not enough coffee!")
+        c = False
+    return w and m and c
 
 def process_coins(p=0, n=0, d=0, q=0):
+    """Returns a dollar amount total for given coin inputs"""
     return (p * 0.01) + (n * 0.05) + (d * 0.10) + (q * 0.25)
 
 def make_coffee(recipe):
+    """Deducts the necessary resources from the coffee machine to make a drink"""
     resources['coffee'] -= recipe.get('coffee', 0)
     resources['water'] -= recipe.get('water', 0)
     resources['milk'] -= recipe.get('milk', 0)
@@ -69,8 +80,9 @@ while True:
     recipe = MENU[order]['ingredients']
     cost = MENU[order]['cost']
 
-    if not sufficient_resources(recipe):
-        print("Sorry, not enough something for that drink")
+    if not check_resources(recipe):
+        print("\n")
+        continue
 
     print(f"Your drink costs ${cost:.2f}")
     print("Please insert your coins")
@@ -85,7 +97,7 @@ while True:
     change = total - cost
 
     if change < 0:
-        print("Sorry that's not enough. Returning coins.\n")
+        print(f"Sorry that's only ${total:.2f}. Returning coins.\n")
         continue
 
     else:
