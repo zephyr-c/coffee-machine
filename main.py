@@ -1,3 +1,4 @@
+##################### Setup Information #####################
 MENU = {
     "espresso": {
         "ingredients": {
@@ -32,6 +33,7 @@ resources = {
     "money": 0,
 }
 
+##################### Helper Functions #####################
 
 def sufficient_resources(drink): #come back and refactor for specific deficiencies
 
@@ -41,6 +43,14 @@ def sufficient_resources(drink): #come back and refactor for specific deficienci
 
 def process_coins(p=0, n=0, d=0, q=0):
     return (p * 0.01) + (n * 0.05) + (d * 0.10) + (q * 0.25)
+
+def make_coffee(recipe):
+    resources['coffee'] -= recipe.get('coffee', 0)
+    resources['water'] -= recipe.get('water', 0)
+    resources['milk'] -= recipe.get('milk', 0)
+
+
+##################### Machine Actions #####################
 
 while True:
     print("Welcome to the Coffee Machine")
@@ -60,36 +70,32 @@ while True:
     cost = MENU[order]['cost']
 
     if not sufficient_resources(recipe):
-        print("Sorry, not enough something for that drink")  # come back and refactor for specific deficiencies
+        print("Sorry, not enough something for that drink")
 
-    print(f"Your drink costs ${cost}")
+    print(f"Your drink costs ${cost:.2f}")
     print("Please insert your coins")
-    pennies = int(input("How many pennies? "))
-    nickels = int(input("How many nickels? "))
+
+    quarters = int(input("How many quarters? "))
     dimes = int(input("How many dimes? "))
-    quarters = int(input("How many quarters?"))
+    nickels = int(input("How many nickels? "))
+    pennies = int(input("How many pennies? "))
+
     total = process_coins(pennies, nickels, dimes, quarters)
 
     change = total - cost
 
     if change < 0:
-        print("Sorry that's not enough. Returning coins.")
+        print("Sorry that's not enough. Returning coins.\n")
+        continue
 
     else:
-        print(f"Thank you! Your change is ${change}")
+        print(f"Thank you! Your change is ${change:.2f}")
+        resources['money'] += cost
 
-    resources['money'] += cost
+    print("\nMaking your coffee!\n")
 
-    resources['coffee'] -= recipe.get('coffee', 0)
-    resources['water'] -= recipe.get('water', 0)
-    resources['milk'] -= recipe.get('milk', 0)
+    make_coffee(recipe)
 
-    print(f"Here is your {order.capitalize()}. Enjoy!")
-
-
-
-# TODO: 1. Check if resources are sufficient for ordered drink
-# TODO: 2. Deduct required resources
-# TODO: 3. Process coins
+    print(f"Here is your {order.capitalize()}. Enjoy!\n")
 
 
