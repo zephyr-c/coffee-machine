@@ -36,23 +36,23 @@ resources = {
 
 ##################### Helper Functions #####################
 
-def check_resources(drink):
-    """Checks that there are sufficient resources to make a drink"""
-    w, m, c = [True] * 3
-    if drink.get("water", 0) > resources["water"]:
-        print("Sorry, not enough water!")
-        w = False
-    if drink.get("milk", 0) > resources["milk"]:
-        print("Sorry, not enough milk!")
-        m = False
-    if drink.get("coffee", 0) > resources["coffee"]:
-        print("Sorry, not enough coffee!")
-        c = False
-    return w and m and c
+def sufficient_resources(drink):
+    """Returns True if resources are sufficent for drink, False otherwise"""
+    for item in drink.keys():
+        if drink[item] > resources[item]:
+            print(f"Sorry! Not enough {item}.")
+            return False
+    return True
 
-def process_coins(p=0, n=0, d=0, q=0):
+def process_coins():
     """Returns a dollar amount total for given coin inputs"""
-    return (p * 0.01) + (n * 0.05) + (d * 0.10) + (q * 0.25)
+
+    total = int(input("How many quarters? ")) * 0.25
+    total += int(input("How many dimes? ")) * 0.10
+    total += int(input("How many nickels? ")) * 0.05
+    total += int(input("How many pennies? ")) * 0.01
+
+    return total
 
 def make_coffee(recipe):
     """Deducts the necessary resources from the coffee machine to make a drink"""
@@ -80,19 +80,14 @@ while True:
     recipe = MENU[order]['ingredients']
     cost = MENU[order]['cost']
 
-    if not check_resources(recipe):
+    if not sufficient_resources(recipe):
         print("\n")
         continue
 
     print(f"Your drink costs ${cost:.2f}")
     print("Please insert your coins")
 
-    quarters = int(input("How many quarters? "))
-    dimes = int(input("How many dimes? "))
-    nickels = int(input("How many nickels? "))
-    pennies = int(input("How many pennies? "))
-
-    total = process_coins(pennies, nickels, dimes, quarters)
+    total = process_coins()
 
     change = total - cost
 
@@ -104,10 +99,10 @@ while True:
         print(f"Thank you! Your change is ${change:.2f}")
         resources['money'] += cost
 
-    print("\nMaking your coffee!\n")
+    print("\n🧑‍🍳 Making your coffee! 🧑‍🍳\n")
 
     make_coffee(recipe)
 
-    print(f"Here is your {order.capitalize()}. Enjoy!\n")
+    print(f"Here is your {order.capitalize()} ☕. Enjoy!\n")
 
 
